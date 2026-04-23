@@ -22,15 +22,15 @@ java -jar target/erp-starter.jar
 Every module in `com.example.erp.*` already follows the same shape. Read one —
 say **customer** — and you'll recognise the pattern in all of them:
 
-| Layer | File | What it stands in for in ekon |
+| Layer | File | Responsibility |
 |---|---|---|
-| Model | `customer/Customer.java`, `CustomerContact.java` | Business Object header + child segment |
-| Data access | `customer/CustomerRepository.java` + `InMemoryCustomerRepository.java` | Base query + DA |
+| Model | `customer/Customer.java`, `CustomerContact.java` | Plain data — header + child records |
+| Data access | `customer/CustomerRepository.java` + `InMemoryCustomerRepository.java` | Read / write / query, swappable implementation |
 | Rules | `customer/rules/VatValidator.java` | Pure, JUnit-tested validation helper |
-| Service | `customer/CustomerService.java` with `beforeSave` / `beforeDeactivate` | `FMDefaultEvents` customisation class |
-| Report | `customer/CustomerListReport.java` | Report (RE) |
-| Maintenance UI | `customer/CustomerCli.java` | Form (FM) / maintenance screen |
-| Wiring | `ErpApp.java`, `DataSeeder.java` | Main boot + menu, seed data |
+| Service | `customer/CustomerService.java` with `beforeSave` / `beforeDeactivate` | Applies business rules, orchestrates repo + validators |
+| Report | `customer/CustomerListReport.java` | Stdout CSV export |
+| Maintenance UI | `customer/CustomerCli.java` | Interactive maintenance screen |
+| Wiring | `ErpApp.java`, `DataSeeder.java` | Main boot + top-level menu, seed data |
 
 > **Take 5 minutes to open `CustomerService.java` and `CustomerServiceTest.java` before starting.** The Supplier module will copy this shape almost verbatim — the Spec Kit exercise is about producing that copy *deliberately* from a spec rather than cargo-culting it.
 
@@ -107,36 +107,25 @@ Tasks should be small enough to each map to one commit. Example target shape:
 - *(Stretch)* `curl http://localhost:8080/suppliers` returns JSON listing the active suppliers.
 - The jar still runs with `java -jar target/erp-starter.jar`.
 
-## 7. 90-minute workshop schedule
+## 7. 60-minute workshop schedule
 
 | Time | Step |
 |---|---|
 | 0:00 – 0:05 | Clone, open in IDE, `mvn verify` |
 | 0:05 – 0:10 | Walk through `CustomerService` + `CustomerServiceTest` as the pattern to copy |
-| 0:10 – 0:20 | Paste §2 brief into `/speckit.specify` |
-| 0:20 – 0:35 | Run `/speckit.clarify`, answer using §3 |
-| 0:35 – 0:50 | Run `/speckit.plan`, sanity-check against §4 |
-| 0:50 – 1:00 | Run `/speckit.tasks`, compare with §5 |
-| 1:00 – 1:25 | `/speckit.implement` tasks **1–5** together (model + VAT rule TDD) |
-| 1:25 – 1:30 | Debrief: map every produced file to its ekon equivalent (Supplier ≡ BO, `beforeSave` ≡ `FMDefaultEvents.beforeSave`, CLI ≡ FM, CSV ≡ RE, HTTP ≡ BO-as-REST, `mvn package` ≡ Setup & Transport) |
+| 0:10 – 0:15 | Run `/speckit.constitution` — agree on the project's non-negotiables |
+| 0:15 – 0:22 | Paste §2 brief into `/speckit.specify` |
+| 0:22 – 0:32 | Run `/speckit.clarify`, answer using §3 |
+| 0:32 – 0:42 | Run `/speckit.plan`, sanity-check against §4 |
+| 0:42 – 0:48 | Run `/speckit.tasks`, compare with §5 |
+| 0:48 – 0:58 | `/speckit.implement` tasks **1–5** together (model + VAT rule TDD) |
+| 0:58 – 1:00 | Debrief: which slash command caught the most bugs before they were written? |
 
 Tasks 6–11 become a take-home.
 
-## 8. Closing slide — why this maps to ekon
+## 8. Why this matters
 
-```
-Plain Java (what you build)           ekon Platform (your real stack)
-───────────────────────────           ─────────────────────────────
-Supplier + SupplierContact POJOs      BO ksk_supplier + "contact" segment
-SupplierRepository (in-memory)        Base query + DA
-SupplierService.beforeSave            FMSupplier extends FMDefaultEvents
-  + VatValidator                        .beforeSave() raising OTException
-SupplierService.beforeDeactivate      FMSupplier.beforeDelete consulting DA
-SupplierListReport (CSV)              Report lst_supplier_active (RE)
-SupplierCli                           Form ksk_supplier (FM)
-(optional) SupplierHttpServer         Tick "REST" on BO (kdev0051/0053)
-mvn package                           Setup & Transport package
-```
-
-The same spec → clarify → plan → tasks loop lands exactly the same way on
-either stack. That's the point of the exercise.
+The same **constitution → specify → clarify → plan → tasks → implement** loop
+works on any codebase or language you bring it to. Keeping spec, plan, tasks
+and code in sync is what turns AI-assisted coding into AI-assisted
+*engineering*. The Supplier module is just a vehicle for practising the loop.

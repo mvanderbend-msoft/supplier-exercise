@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Customer entity — the "header segment" of the Customer business object.
+ * Customer entity — the header record of the Customer aggregate.
  *
  * <p>Mutable because maintenance screens edit it in place. Equality is based
- * on the business code, as is the ekon convention for BO header records.</p>
+ * on the business code.</p>
  */
 public class Customer {
 

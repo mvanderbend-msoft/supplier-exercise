@@ -6,12 +6,11 @@ import com.example.erp.order.OrderRepository;
 import com.example.erp.order.OrderStatus;
 
 /**
- * Customer "customisation class" equivalent.
+ * Customer service — applies business rules and delegates persistence.
  *
  * <p>Exposes the public operations {@link #save(Customer)} and
  * {@link #deactivate(String)}, and keeps the rule logic in {@link #beforeSave}
- * / {@link #beforeDeactivate} so it mirrors the ekon FMDefaultEvents pattern
- * and stays easy to unit-test.</p>
+ * / {@link #beforeDeactivate} so the rules stay easy to unit-test.</p>
  */
 public class CustomerService {
 
@@ -53,7 +52,7 @@ public class CustomerService {
         customers.save(customer);
     }
 
-    // ---- hook methods (mirrors FMDefaultEvents) ----------------------------
+    // ---- rule hooks --------------------------------------------------------
 
     protected void beforeSave(Customer c) {
         if (c.getLegalName() == null || c.getLegalName().isBlank()) {

@@ -1,7 +1,7 @@
 # ERP Starter — Spec Kit Workshop Starter Repo
 
-A tiny plain-Java / Maven / JUnit project that stands in for an ekon Platform
-application during a GitHub **Spec Kit** workshop.
+A tiny plain-Java / Maven / JUnit project used as the brownfield starter for a
+GitHub **Spec Kit** workshop.
 
 This is a **brownfield** starter: the repo already ships with three modules
 (**Customer**, **Article**, **Order**) wired into a small CLI, following a
@@ -9,7 +9,7 @@ consistent pattern. The workshop exercise is to **add a Supplier module** using
 the same pattern, but driven through the Spec Kit workflow rather than jumping
 straight into code.
 
-See [`SPECKIT-EXERCISE.md`](./SPECKIT-EXERCISE.md) for the workshop script.
+See [`LAB.html`](./LAB.html) for the workshop script (open it in a browser).
 
 ---
 
@@ -67,11 +67,11 @@ com.example.erp
 
 All three existing modules share the same shape:
 
-- a **model** (POJO + optional child records) — the "Business Object" equivalent
-- a **repository** interface with an in-memory implementation — the "Data Access" equivalent
-- a **service** with explicit `beforeSave` / `beforeDeactivate` hooks — the "customisation class" equivalent
+- a **model** (POJO + optional child records)
+- a **repository** interface with an in-memory implementation
+- a **service** with explicit `beforeSave` / `beforeDeactivate` hooks for business rules
 - optional **rules** classes (pure, JUnit-tested) — validation logic
-- a **CLI** for the user — the "form / maintenance" equivalent
+- a **CLI** for the user
 
 ### Note on the `Order` module
 
@@ -86,7 +86,7 @@ talk to.
 .
 ├── pom.xml
 ├── README.md
-├── SPECKIT-EXERCISE.md
+├── LAB.html
 ├── src/main/java/com/example/erp/…
 └── src/test/java/com/example/erp/…
 ```
