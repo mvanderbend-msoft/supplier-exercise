@@ -267,7 +267,7 @@
     <strong>In this lab</strong>
     <ol>
       <li><a href="#what">What this is & how to use it</a></li>
-      <li><a href="#setup">Setup — verify the starter works</a></li>
+      <li><a href="#setup">Setup — install Spec Kit & verify the starter</a></li>
       <li><a href="#tour">Tour the existing codebase</a></li>
       <li><a href="#brief">Exercise — the feature brief</a></li>
       <li><a href="#constitution"><code>/speckit.constitution</code></a></li>
@@ -294,15 +294,34 @@
 </section>
 
 <section id="setup">
-  <h2><span class="num">2</span> Setup — verify the starter works</h2>
-  <p>You need Java 17 and Maven on your <code>PATH</code>. From the repo root:</p>
+  <h2><span class="num">2</span> Setup — install Spec Kit & verify the starter</h2>
+
+  <h3>Install Spec Kit</h3>
+  <p>Spec Kit ships as the <code>specify</code> CLI. Install it once with <a href="https://docs.astral.sh/uv/" target="_blank" rel="noopener"><code>uv</code></a> and point it at this repo with <code>--ai copilot</code> so the slash commands are wired to GitHub Copilot:</p>
+<pre><code># one-time install of the Specify CLI
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+
+# verify
+specify version
+
+# initialise Spec Kit inside this repo (run from the repo root)
+specify init . --ai copilot</code></pre>
+  <p>That last command drops a <code>.specify/</code> folder and the slash-command templates into the repo. If your Copilot client is already running, restart it so the new <code>/speckit.*</code> commands show up.</p>
+
+  <div class="callout info">
+    <div class="label">Don't have <code>uv</code>?</div>
+    <p style="margin:0">See the <a href="https://github.com/github/spec-kit#-get-started" target="_blank" rel="noopener">Spec Kit README</a> for install options, or run one-off without installing: <code>uvx --from git+https://github.com/github/spec-kit.git specify init . --ai copilot</code>.</p>
+  </div>
+
+  <h3>Verify the starter builds</h3>
+  <p>You also need Java 17 and Maven on your <code>PATH</code>. From the repo root:</p>
 <pre><code>mvn test
 mvn package
 java -jar target/erp-starter.jar</code></pre>
   <p>You should see <strong>13 tests pass</strong> and a CLI menu with Customers / Articles / Orders / Quit. Poke around — list customers (<span class="kbd">1</span> → <span class="kbd">1</span>), print the CSV report (<span class="kbd">1</span> → <span class="kbd">4</span>), quit with <span class="kbd">q</span>.</p>
   <div class="callout warn">
-    <div class="label">If this fails</div>
-    <p style="margin:0">Fix setup before moving on. The whole point of a brownfield workshop is that the existing tests stay green after your changes.</p>
+    <div class="label">If any of this fails</div>
+    <p style="margin:0">Fix setup before moving on. The whole point of a brownfield workshop is that the existing tests stay green after your changes — and that the Spec Kit commands are available when you need them.</p>
   </div>
 </section>
 
