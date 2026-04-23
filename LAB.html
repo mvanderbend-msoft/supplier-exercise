@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spec Kit Lab — Add a Supplier Module</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --bg-soft: #171a2b;
+    --panel: #1d2136;
+    --border: #2a2f4a;
+    --text: #e7e9f3;
+    --muted: #9aa0b8;
+    --accent: #7c5cff;
+    --accent-2: #31d0aa;
+    --warn: #ffb020;
+    --code-bg: #0b0d18;
+    --code-fg: #e7e9f3;
+    --chip: #2a2f4a;
+    --link: #8ab4ff;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f7fb;
+      --bg-soft: #ffffff;
+      --panel: #ffffff;
+      --border: #e5e7ef;
+      --text: #1a1c2b;
+      --muted: #5b6078;
+      --accent: #5b3cff;
+      --accent-2: #0aa37a;
+      --warn: #a85c00;
+      --code-bg: #0b0d18;
+      --code-fg: #e7e9f3;
+      --chip: #eef0f7;
+      --link: #2b5ed8;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header {
+    padding: 2.5rem 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(124,92,255,0.2), rgba(49,208,170,0.15));
+    border-bottom: 1px solid var(--border);
+  }
+  header .wrap { max-width: 920px; margin: 0 auto; }
+  header h1 {
+    margin: 0 0 .5rem;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    line-height: 1.2;
+  }
+  header .sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  header .chips {
+    display: flex; flex-wrap: wrap; gap: .4rem;
+    margin-top: 1rem;
+  }
+  .chip {
+    background: var(--chip);
+    color: var(--text);
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    border: 1px solid var(--border);
+  }
+  main { max-width: 920px; margin: 0 auto; padding: 1.5rem; }
+  section { margin: 2.5rem 0; }
+  h2 {
+    font-size: 1.35rem;
+    margin: 0 0 .75rem;
+    padding-bottom: .35rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: .6rem;
+  }
+  h2 .num {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: .9em;
+  }
+  h3 { margin-top: 1.5rem; font-size: 1.05rem; }
+  p, li { color: var(--text); }
+  a { color: var(--link); }
+  code {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: .08em .35em;
+    border-radius: 4px;
+    font-size: .92em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 1rem 1.1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: .9rem;
+    line-height: 1.5;
+    border: 1px solid var(--border);
+  }
+  pre code { background: transparent; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: .5rem 0 1rem; }
+  th, td {
+    padding: .55rem .7rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    font-size: .95rem;
+  }
+  th { color: var(--muted); font-weight: 600; }
+  blockquote {
+    margin: 1rem 0;
+    padding: .6rem 1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--bg-soft);
+    color: var(--text);
+    border-radius: 0 6px 6px 0;
+  }
+  .callout {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: .9rem 1.1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+  }
+  .callout.info { border-left-color: var(--accent-2); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout .label {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: .2rem;
+  }
+  .callout.info .label { color: var(--accent-2); }
+  .callout.warn .label { color: var(--warn); }
+  details.hint {
+    margin: .75rem 0;
+    padding: 0;
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  details.hint > summary {
+    cursor: pointer;
+    padding: .7rem 1rem;
+    font-weight: 600;
+    color: var(--muted);
+    list-style: none;
+    display: flex; align-items: center; gap: .5rem;
+    user-select: none;
+  }
+  details.hint > summary::-webkit-details-marker { display: none; }
+  details.hint > summary::before {
+    content: "💡";
+    font-size: 1rem;
+  }
+  details.hint[open] > summary {
+    color: var(--text);
+    border-bottom: 1px dashed var(--border);
+  }
+  details.hint > summary:hover { color: var(--text); }
+  details.hint .body {
+    padding: .9rem 1rem 1.1rem;
+  }
+  details.hint .body p:first-child { margin-top: 0; }
+  details.hint .body p:last-child { margin-bottom: 0; }
+  details.hint.tip > summary::before { content: "💡"; }
+  details.hint.guardrail > summary::before { content: "🛡️"; }
+  details.hint.peek > summary::before { content: "🔎"; }
+  .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+  .step-list > li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 1rem 2.4rem;
+  }
+  .step-list > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 0;
+    width: 1.7rem; height: 1.7rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: .85rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .kbd {
+    background: var(--chip);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: .05em .4em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .85em;
+  }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: .85rem;
+  }
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+  }
+  .toc ol { margin: .25rem 0 0 1.1rem; padding: 0; }
+  .toc li { margin: .15rem 0; }
+  .pill {
+    display: inline-block;
+    padding: .12em .55em;
+    border-radius: 4px;
+    font-size: .75em;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    background: var(--chip);
+    color: var(--muted);
+    vertical-align: middle;
+    margin-left: .4rem;
+  }
+  .pill.const   { background: rgba(200,200,200,.18); color: var(--muted); }
+  .pill.specify { background: rgba(124,92,255,.2); color: var(--accent); }
+  .pill.clarify { background: rgba(255,176,32,.2); color: var(--warn); }
+  .pill.plan    { background: rgba(49,208,170,.2); color: var(--accent-2); }
+  .pill.tasks   { background: rgba(138,180,255,.2); color: var(--link); }
+  .pill.impl    { background: rgba(255,92,168,.2); color: #ff5ca8; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="chip" style="background: rgba(124,92,255,.25); border-color: transparent; color: var(--text); font-weight:600;">Spec Kit Workshop</div>
+    <h1>Spec Kit Lab — Add a <em>Supplier</em> module to the ERP starter</h1>
+    <p class="sub">A 90-minute hands-on lab where you drive <strong>GitHub Copilot</strong> with <strong>Spec Kit</strong> slash commands to add a new module to an existing Java/Maven codebase. You write a short English brief and iterate with the tool through <em>specify → clarify → plan → tasks → implement</em> — not the other way round.</p>
+    <div class="chips">
+      <span class="chip">Java 17</span>
+      <span class="chip">Maven</span>
+      <span class="chip">JUnit 5</span>
+      <span class="chip">No database</span>
+      <span class="chip">Brownfield</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section>
+  <div class="toc">
+    <strong>In this lab</strong>
+    <ol>
+      <li><a href="#what">What this is & how to use it</a></li>
+      <li><a href="#setup">Setup — verify the starter works</a></li>
+      <li><a href="#tour">Tour the existing codebase</a></li>
+      <li><a href="#brief">Exercise — the feature brief</a></li>
+      <li><a href="#constitution"><code>/speckit.constitution</code></a></li>
+      <li><a href="#specify"><code>/speckit.specify</code></a></li>
+      <li><a href="#clarify"><code>/speckit.clarify</code></a></li>
+      <li><a href="#plan"><code>/speckit.plan</code></a></li>
+      <li><a href="#tasks"><code>/speckit.tasks</code></a></li>
+      <li><a href="#implement"><code>/speckit.implement</code></a></li>
+      <li><a href="#done">Definition of done</a></li>
+      <li><a href="#why">What you've just practised</a></li>
+    </ol>
+  </div>
+</section>
+
+<section id="what">
+  <h2><span class="num">1</span> What this is & how to use it</h2>
+  <p>The starter repo already ships with three working modules — <strong>Customer</strong>, <strong>Article</strong> and <strong>Order</strong> — all following the same layering pattern. Your job is to add a fourth module, <strong>Supplier</strong>, but <em>without writing Java first</em>: you write a short English brief, then let Spec Kit turn it into a spec, a plan and a task list that you review, push back on, and then implement.</p>
+  <p>The goal is not to finish a Supplier module. The goal is to feel the rhythm of <strong>spec-first development</strong> and develop an instinct for what each slash command is actually good for.</p>
+
+  <div class="callout info">
+    <div class="label">How the hints work</div>
+    <p style="margin:0">Throughout the lab you'll see expandable hint boxes. They contain coaching — <em>what a step is for</em>, <em>what to watch out for</em>, <em>what "good" looks like</em>. Don't open them on the first pass. Try the step yourself, form your own opinion, <em>then</em> peek.</p>
+  </div>
+</section>
+
+<section id="setup">
+  <h2><span class="num">2</span> Setup — verify the starter works</h2>
+  <p>You need Java 17 and Maven on your <code>PATH</code>. From the repo root:</p>
+<pre><code>mvn test
+mvn package
+java -jar target/erp-starter.jar</code></pre>
+  <p>You should see <strong>13 tests pass</strong> and a CLI menu with Customers / Articles / Orders / Quit. Poke around — list customers (<span class="kbd">1</span> → <span class="kbd">1</span>), print the CSV report (<span class="kbd">1</span> → <span class="kbd">4</span>), quit with <span class="kbd">q</span>.</p>
+  <div class="callout warn">
+    <div class="label">If this fails</div>
+    <p style="margin:0">Fix setup before moving on. The whole point of a brownfield workshop is that the existing tests stay green after your changes.</p>
+  </div>
+</section>
+
+<section id="tour">
+  <h2><span class="num">3</span> Tour the existing codebase (5 min)</h2>
+  <p>Every module in <code>com.example.erp.*</code> follows the same shape. Read <strong>one</strong> — <code>customer/</code> — and you've read them all:</p>
+  <table>
+    <thead><tr><th>Layer</th><th>File(s)</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td>Model</td><td><code>Customer.java</code>, <code>CustomerContact.java</code></td><td>Plain data carriers — header + child records</td></tr>
+      <tr><td>Data access</td><td><code>CustomerRepository</code> + <code>InMemoryCustomerRepository</code></td><td>Read / write / query, swappable implementation</td></tr>
+      <tr><td>Rules</td><td><code>rules/VatValidator.java</code></td><td>Pure, JUnit-tested validation helper</td></tr>
+      <tr><td>Service</td><td><code>CustomerService.java</code> with <code>beforeSave</code> / <code>beforeDeactivate</code></td><td>Applies business rules, orchestrates repo + validators</td></tr>
+      <tr><td>Report</td><td><code>CustomerListReport.java</code></td><td>Stdout CSV export</td></tr>
+      <tr><td>CLI</td><td><code>CustomerCli.java</code></td><td>Interactive maintenance screen</td></tr>
+      <tr><td>Wiring</td><td><code>ErpApp.java</code>, <code>DataSeeder.java</code></td><td>Main boot + top-level menu, seed data</td></tr>
+    </tbody>
+  </table>
+  <p>Open <code>CustomerService.java</code> and <code>CustomerServiceTest.java</code> side-by-side — the Supplier module will copy this shape almost verbatim. The lab is about producing that copy <em>deliberately</em> from a spec rather than cargo-culting it.</p>
+</section>
+
+<section id="brief">
+  <h2><span class="num">4</span> The feature brief</h2>
+  <blockquote>
+    Our purchasing team needs a <strong>Supplier maintenance</strong> inside the ERP. A supplier has a code, legal name, country (ISO-3166 alpha-2), VAT number, default payment term in days and an <em>Active</em> flag. Each supplier may have zero or more contacts (name, role, email, phone). The system must refuse to save a supplier with a VAT number that is invalid for the chosen country, and refuse to deactivate a supplier that still has <em>open orders</em> (any order not in status <code>CLOSED</code>). Purchasing managers need a printable "Active suppliers" list sorted by country, then by legal name. The new module must plug into the existing CLI as option <strong>4</strong>, next to Customers, Articles and Orders. As a stretch goal, we would like a small local HTTP endpoint returning the active suppliers as JSON so the portal team can prototype against it.
+  </blockquote>
+  <p>Deliberately a little vague — <code>/speckit.clarify</code> has room to do real work.</p>
+</section>
+
+<section id="constitution">
+  <h2><span class="num">5</span> Run <code>/speckit.constitution</code> <span class="pill const">Constitution</span></h2>
+  <p>Before specifying anything, tell Spec Kit the <strong>ground rules</strong> every future step must respect. The constitution is the short list of non-negotiables for this codebase — style, architecture, testing, dependencies — that later commands (<code>specify</code>, <code>plan</code>, <code>implement</code>) will treat as guardrails.</p>
+<pre><code>/speckit.constitution</code></pre>
+
+  <details class="hint tip">
+    <summary>Tip — <code>constitution</code> captures <em>what never changes</em></summary>
+    <div class="body">
+      <p>Think of it as a tiny project charter. Good clauses are durable ("no new runtime dependencies without approval", "every service has a JUnit test", "mirror the layering of the existing modules") — not feature-specific. You write it once per project and amend it rarely.</p>
+      <p>You'll feel its value two steps later: <code>/speckit.plan</code> will stop suggesting frameworks you don't want, because they violate your own rules.</p>
+    </div>
+  </details>
+  <details class="hint guardrail">
+    <summary>Guardrail — keep it short and enforceable</summary>
+    <div class="body">
+      <p>A constitution with 40 clauses gets ignored. Aim for 5–10 crisp, testable statements. If you can't tell whether a future diff violates a clause, the clause is too vague — rewrite it until you can.</p>
+    </div>
+  </details>
+  <details class="hint peek">
+    <summary>Peek — principles that fit this exercise</summary>
+    <div class="body">
+      <ul>
+        <li><strong>Pure JDK only</strong> — no new Maven dependencies beyond JUnit.</li>
+        <li><strong>In-memory persistence</strong> — no database, no file I/O for state.</li>
+        <li><strong>Follow the existing layering</strong> — every new module mirrors <code>com.example.erp.customer</code> (model, repository, rules, service with <code>beforeSave</code> / <code>beforeDeactivate</code> hooks, report, CLI).</li>
+        <li><strong>Tests first, tests always green</strong> — every service has JUnit tests; <code>mvn test</code> stays green after every task.</li>
+        <li><strong>Business rules raise exceptions, not booleans</strong> — invalid state fails loudly with a clear message.</li>
+        <li><strong>CLI is the user-facing surface</strong> — every module plugs into <code>ErpApp</code>'s menu.</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="specify">
+  <h2><span class="num">6</span> Run <code>/speckit.specify</code> <span class="pill specify">Specify</span></h2>
+  <p>In your GitHub Copilot CLI / Chat, invoke:</p>
+<pre><code>/speckit.specify</code></pre>
+  <p>and feed it the brief from §4. Read the generated spec carefully and challenge anything that doesn't match what you actually asked for.</p>
+
+  <details class="hint tip">
+    <summary>Tip — <code>specify</code> is about the <em>what</em> and <em>why</em>, not the <em>how</em></summary>
+    <div class="body">
+      <p>A good brief (and the spec that comes out of it) describes <strong>the outcome the business wants and why they want it</strong>: who the users are, what problem is being solved, what has to be true for the feature to count as "done". It should not yet talk about files, packages, classes, HTTP routes or algorithms — that's the plan's job.</p>
+      <p>When you review the output, ask yourself: <em>"Could a backend dev, a frontend dev and a tester all read this and agree on what's being built, without me explaining anything?"</em> If yes, the spec is doing its job.</p>
+    </div>
+  </details>
+  <details class="hint guardrail">
+    <summary>Guardrail — don't let the spec leak implementation</summary>
+    <div class="body">
+      <p>If <code>specify</code> comes back already naming Java classes, database tables, or specific libraries, that's a smell. Prune those out and keep the spec at the level of <em>observable behaviour</em>: "the system refuses to save when VAT is invalid" — not "<code>SupplierService.beforeSave</code> throws <code>RuleException</code>". Decisions like the latter belong in the plan, where they can be challenged independently.</p>
+    </div>
+  </details>
+</section>
+
+<section id="clarify">
+  <h2><span class="num">7</span> Run <code>/speckit.clarify</code> <span class="pill clarify">Clarify</span></h2>
+<pre><code>/speckit.clarify</code></pre>
+  <p>This step matters more than any other. Expect questions around VAT validation, the open-orders check, how Active is modelled, the report format, and the stretch HTTP endpoint.</p>
+
+  <details class="hint tip">
+    <summary>Tip — <code>clarify</code> is your quality gate</summary>
+    <div class="body">
+      <p>It's the Spec Kit step most teams skip — and it's the one that usually catches a missing requirement before it becomes a bug. Run it every time, and <em>actually read</em> the questions. Each one is the tool telling you it saw an ambiguity; dismissing the question doesn't resolve the ambiguity, it just hides it until implementation.</p>
+      <p>Answer with the <strong>smallest workable choice</strong>. "Refuse with a clear error message" beats "design an error-code taxonomy". The time to expand scope is later, with evidence.</p>
+    </div>
+  </details>
+  <details class="hint guardrail">
+    <summary>Guardrail — don't let clarify invent new requirements</summary>
+    <div class="body">
+      <p>If a clarifying question proposes something that isn't in the brief (audit fields, soft delete, a second report, a DELETE endpoint), push back. Narrow the question, or answer "out of scope for this iteration". A clean spec is one where every bullet is traceable to the brief or to an answer you explicitly gave.</p>
+    </div>
+  </details>
+  <details class="hint peek">
+    <summary>Peek — the ambiguity to watch for in this exercise</summary>
+    <div class="body">
+      <p>The "open orders" rule is a trap. The starter's <code>Order</code> has a <code>customerCode</code> field, <em>not</em> a <code>supplierCode</code>. <code>clarify</code> should surface this. When it does, don't paper over it — pick one approach explicitly and record the choice in the spec (e.g. "add a separate <code>SupplierOrderRepository</code>", or "inject an <code>OpenOrdersGuard</code> interface"). Either is fine; ambiguity is not.</p>
+    </div>
+  </details>
+</section>
+
+<section id="plan">
+  <h2><span class="num">8</span> Run <code>/speckit.plan</code> <span class="pill plan">Plan</span></h2>
+<pre><code>/speckit.plan</code></pre>
+  <p>With the clarified spec in hand, the plan should turn "what" into "how" — and it should sound like it was written by someone who has actually read this repo.</p>
+
+  <details class="hint tip">
+    <summary>Tip — <code>plan</code> is about the <em>how</em></summary>
+    <div class="body">
+      <p>If <code>specify</code> answers "what and why", the plan answers "how, concretely". A good plan names real files, lists the interfaces, calls out the test strategy, and orders the work so each step leaves the build green. If the plan is still at the level of <em>"add a service layer for suppliers"</em>, it's too abstract — push it until it says <em>"add <code>SupplierService.java</code> with <code>beforeSave(Supplier)</code>, mirroring <code>CustomerService</code>"</em>.</p>
+    </div>
+  </details>
+  <details class="hint guardrail">
+    <summary>Guardrail — reject plans that drift from the existing pattern</summary>
+    <div class="body">
+      <p>The <code>pom.xml</code> has only JUnit. If the plan suggests Jackson, Spring, Lombok, an ORM, or any other dependency, that's a signal to re-prompt more constrained: <em>"stay on pure JDK, no new Maven dependencies, mirror the layering of <code>com.example.erp.customer</code>"</em>. Consistency with the existing code is worth more than any shiny library.</p>
+    </div>
+  </details>
+  <details class="hint peek">
+    <summary>Peek — shape of a "good" plan for this exercise</summary>
+    <div class="body">
+      <ol>
+        <li>New package <code>com.example.erp.supplier</code>: <code>Supplier</code>, <code>SupplierContact</code>, <code>SupplierRepository</code>, <code>InMemorySupplierRepository</code>, <code>SupplierService</code>, <code>SupplierListReport</code>, <code>SupplierCli</code>.</li>
+        <li>Reuse <code>VatValidator</code> (move to a shared <code>common.rules</code> package if it helps, or keep it where it is and import it — document the choice).</li>
+        <li>Open-orders rule: implement the option chosen in §6.</li>
+        <li>Wire into <code>ErpApp</code> as menu option 4; extend <code>DataSeeder</code> with 2–3 sample suppliers.</li>
+        <li>Tests mirroring <code>CustomerServiceTest</code>: happy save, invalid VAT, blank name, negative term, deactivate-allowed, deactivate-refused.</li>
+        <li>Stretch: <code>SupplierHttpServer</code> using <code>com.sun.net.httpserver.HttpServer</code>, <code>GET /suppliers</code> returns JSON.</li>
+      </ol>
+    </div>
+  </details>
+</section>
+
+<section id="tasks">
+  <h2><span class="num">9</span> Run <code>/speckit.tasks</code> <span class="pill tasks">Tasks</span></h2>
+<pre><code>/speckit.tasks</code></pre>
+
+  <details class="hint tip">
+    <summary>Tip — <code>tasks</code> is about <em>slicing</em></summary>
+    <div class="body">
+      <p>A task is well-sliced when it maps to one commit, leaves the build green, and has an obvious "done" signal (a test passes, the CLI prints the new option, etc.). Where possible, order tests <em>before</em> the code that makes them pass, so each pair of tasks is a tiny red/green cycle. That way, at any point you can stop and hand off without leaving a half-finished branch.</p>
+    </div>
+  </details>
+  <details class="hint peek">
+    <summary>Peek — expected task shape for this exercise</summary>
+    <div class="body">
+      <ol>
+        <li>Create <code>com.example.erp.supplier</code> package with <code>Supplier</code> + <code>SupplierContact</code>.</li>
+        <li>Add <code>SupplierRepository</code> + <code>InMemorySupplierRepository</code>.</li>
+        <li>Decide where <code>VatValidator</code> lives (shared package vs. import in place).</li>
+        <li>Add <code>SupplierService</code> with <code>beforeSave</code> — <strong>tests first, watch them go red.</strong></li>
+        <li>Make the <code>beforeSave</code> tests green.</li>
+        <li>Add the open-orders rule wiring chosen in §6; <code>beforeDeactivate</code> tests red → green.</li>
+        <li>Add <code>SupplierListReport</code> + a small test.</li>
+        <li>Add <code>SupplierCli</code>; wire menu option 4 in <code>ErpApp</code>.</li>
+        <li>Extend <code>DataSeeder</code> with sample suppliers.</li>
+        <li><code>mvn verify</code> + manual smoke test from the CLI.</li>
+        <li><em>(Stretch)</em> Add <code>SupplierHttpServer</code>, hit it with <code>curl http://localhost:8080/suppliers</code>.</li>
+      </ol>
+    </div>
+  </details>
+</section>
+
+<section id="implement">
+  <h2><span class="num">10</span> Run <code>/speckit.implement</code> <span class="pill impl">Implement</span></h2>
+  <p>Walk through tasks <strong>1–5</strong> together in the session. Tasks 6–11 are a take-home.</p>
+<pre><code>/speckit.implement</code></pre>
+
+  <details class="hint tip">
+    <summary>Tip — <code>implement</code> is where <em>you</em> stay in the loop</summary>
+    <div class="body">
+      <p>Run <code>mvn test</code> after every task. When a test goes red, decide — <em>before</em> asking the tool to fix anything — whether it's the test that's wrong, the implementation that's wrong, or the spec itself that's wrong. That triage is the skill the workshop is training. If you skip it, you're back to vibe-coding with extra steps.</p>
+    </div>
+  </details>
+  <details class="hint guardrail">
+    <summary>Guardrail — commit after every task</summary>
+    <div class="body">
+      <p>A per-task commit history is the easiest way to back out if the tool drifts on task <em>n+1</em>, and it's the cleanest artefact to show a reviewer afterwards — the Git log becomes a literal walk-through of the specified work.</p>
+    </div>
+  </details>
+</section>
+
+<section id="done">
+  <h2><span class="num">11</span> Definition of done</h2>
+  <ul>
+    <li><code>mvn test</code> stays green and adds at least the six Supplier tests.</li>
+    <li>From the CLI, option 4 opens a Supplier maintenance that can create, list, deactivate and report.</li>
+    <li>Saving a supplier with an invalid VAT is refused with a clear message.</li>
+    <li>Deactivating a supplier with at least one non-<code>CLOSED</code> order is refused.</li>
+    <li>The "active suppliers" CSV report prints sorted by country, then legal name.</li>
+    <li><em>(Stretch)</em> <code>curl http://localhost:8080/suppliers</code> returns JSON listing the active suppliers.</li>
+    <li>The jar still runs with <code>java -jar target/erp-starter.jar</code>.</li>
+  </ul>
+</section>
+
+<section id="why">
+  <h2><span class="num">12</span> What you've just practised</h2>
+  <p>Six distinct skills — each matched to a slash command — that travel with you to any codebase or language:</p>
+  <table>
+    <thead><tr><th>Step</th><th>Skill</th><th>Question it answers</th></tr></thead>
+    <tbody>
+      <tr><td><code>/speckit.constitution</code></td><td>Setting guardrails</td><td>What rules does every change in this codebase have to respect?</td></tr>
+      <tr><td><code>/speckit.specify</code></td><td>Stating the problem</td><td><em>What</em> do we need, for whom, and <em>why</em>?</td></tr>
+      <tr><td><code>/speckit.clarify</code></td><td>Surfacing ambiguity early</td><td>What questions do I owe an answer to before I start?</td></tr>
+      <tr><td><code>/speckit.plan</code></td><td>Designing the solution</td><td><em>How</em> will this land in <em>this</em> codebase?</td></tr>
+      <tr><td><code>/speckit.tasks</code></td><td>Slicing the work</td><td>What's the smallest shippable step — then the next?</td></tr>
+      <tr><td><code>/speckit.implement</code></td><td>Executing with discipline</td><td>Is the test, the code, or the spec wrong when something breaks?</td></tr>
+    </tbody>
+  </table>
+  <p>The loop is the point. Keeping spec, plan, tasks and code in sync is what turns AI-assisted coding into AI-assisted <em>engineering</em> — and it works on any stack you bring it to.</p>
+</section>
+
+</main>
+
+<footer>
+  Spec Kit brownfield lab · Java 17 / Maven / JUnit 5
+</footer>
+
+</body>
+</html>
