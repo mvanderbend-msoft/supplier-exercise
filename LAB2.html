@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AgentRC Lab - Make the Repo AI-Ready</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --bg-soft: #171a2b;
+    --panel: #1d2136;
+    --border: #2a2f4a;
+    --text: #e7e9f3;
+    --muted: #9aa0b8;
+    --accent: #7c5cff;
+    --accent-2: #31d0aa;
+    --warn: #ffb020;
+    --code-bg: #0b0d18;
+    --code-fg: #e7e9f3;
+    --chip: #2a2f4a;
+    --link: #8ab4ff;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f7fb;
+      --bg-soft: #ffffff;
+      --panel: #ffffff;
+      --border: #e5e7ef;
+      --text: #1a1c2b;
+      --muted: #5b6078;
+      --accent: #5b3cff;
+      --accent-2: #0aa37a;
+      --warn: #a85c00;
+      --code-bg: #0b0d18;
+      --code-fg: #e7e9f3;
+      --chip: #eef0f7;
+      --link: #2b5ed8;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header {
+    padding: 2.5rem 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(124,92,255,0.2), rgba(49,208,170,0.15));
+    border-bottom: 1px solid var(--border);
+  }
+  header .wrap { max-width: 920px; margin: 0 auto; }
+  header h1 {
+    margin: 0 0 .5rem;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    line-height: 1.2;
+  }
+  header .sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  header .chips {
+    display: flex; flex-wrap: wrap; gap: .4rem;
+    margin-top: 1rem;
+  }
+  .chip {
+    background: var(--chip);
+    color: var(--text);
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    border: 1px solid var(--border);
+  }
+  main { max-width: 920px; margin: 0 auto; padding: 1.5rem; }
+  section { margin: 2.5rem 0; }
+  h2 {
+    font-size: 1.35rem;
+    margin: 0 0 .75rem;
+    padding-bottom: .35rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: .6rem;
+  }
+  h2 .num {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: .9em;
+  }
+  h3 { margin-top: 1.5rem; font-size: 1.05rem; }
+  p, li { color: var(--text); }
+  a { color: var(--link); }
+  code {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: .08em .35em;
+    border-radius: 4px;
+    font-size: .92em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 1rem 1.1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: .9rem;
+    line-height: 1.5;
+    border: 1px solid var(--border);
+  }
+  pre code { background: transparent; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: .5rem 0 1rem; }
+  th, td {
+    padding: .55rem .7rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    font-size: .95rem;
+  }
+  th { color: var(--muted); font-weight: 600; }
+  blockquote {
+    margin: 1rem 0;
+    padding: .6rem 1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--bg-soft);
+    color: var(--text);
+    border-radius: 0 6px 6px 0;
+  }
+  .callout {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: .9rem 1.1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+  }
+  .callout.info { border-left-color: var(--accent-2); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout .label {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: .2rem;
+  }
+  .callout.info .label { color: var(--accent-2); }
+  .callout.warn .label { color: var(--warn); }
+  details.hint {
+    margin: .75rem 0;
+    padding: 0;
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  details.hint > summary {
+    cursor: pointer;
+    padding: .7rem 1rem;
+    font-weight: 600;
+    color: var(--muted);
+    list-style: none;
+    display: flex; align-items: center; gap: .5rem;
+    user-select: none;
+  }
+  details.hint > summary::-webkit-details-marker { display: none; }
+  details.hint > summary::before {
+    content: "💡";
+    font-size: 1rem;
+  }
+  details.hint[open] > summary {
+    color: var(--text);
+    border-bottom: 1px dashed var(--border);
+  }
+  details.hint > summary:hover { color: var(--text); }
+  details.hint .body {
+    padding: .9rem 1rem 1.1rem;
+  }
+  details.hint .body p:first-child { margin-top: 0; }
+  details.hint .body p:last-child { margin-bottom: 0; }
+  details.hint.tip > summary::before { content: "💡"; }
+  details.hint.guardrail > summary::before { content: "🛡️"; }
+  details.hint.peek > summary::before { content: "🔎"; }
+  .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+  .step-list > li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 1rem 2.4rem;
+  }
+  .step-list > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 0;
+    width: 1.7rem; height: 1.7rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: .85rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .kbd {
+    background: var(--chip);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: .05em .4em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .85em;
+  }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: .85rem;
+  }
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+  }
+  .toc ol { margin: .25rem 0 0 1.1rem; padding: 0; }
+  .toc li { margin: .15rem 0; }
+  .pill {
+    display: inline-block;
+    padding: .12em .55em;
+    border-radius: 4px;
+    font-size: .75em;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    background: var(--chip);
+    color: var(--muted);
+    vertical-align: middle;
+    margin-left: .4rem;
+  }
+  .pill.const   { background: rgba(200,200,200,.18); color: var(--muted); }
+  .pill.specify { background: rgba(124,92,255,.2); color: var(--accent); }
+  .pill.clarify { background: rgba(255,176,32,.2); color: var(--warn); }
+  .pill.plan    { background: rgba(49,208,170,.2); color: var(--accent-2); }
+  .pill.tasks   { background: rgba(138,180,255,.2); color: var(--link); }
+  .pill.impl    { background: rgba(255,92,168,.2); color: #ff5ca8; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="chip" style="background: rgba(124,92,255,.25); border-color: transparent; color: var(--text); font-weight:600;">AgentRC Workshop</div>
+    <h1>AgentRC Lab - Score and improve this repo's <em>AI-readiness</em></h1>
+    <p class="sub">A hands-on lab where you run <strong>Microsoft AgentRC</strong> against this Java/Maven starter, read the readiness score across <strong>9 pillars</strong> and a <strong>5-level maturity model</strong>, then generate repo-specific instructions, evals and dev configs for coding agents.</p>
+    <div class="chips">
+      <span class="chip">AgentRC</span>
+      <span class="chip">AI-readiness</span>
+      <span class="chip">Copilot SDK</span>
+      <span class="chip">Java / Maven</span>
+      <span class="chip">Brownfield</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section>
+  <div class="toc">
+    <strong>In this lab</strong>
+    <ol>
+      <li><a href="#what">What this is & how to use it</a></li>
+      <li><a href="#setup">Setup - verify tools and repo state</a></li>
+      <li><a href="#readiness">Run <code>agentrc readiness</code></a></li>
+      <li><a href="#score">Interpret the score</a></li>
+      <li><a href="#missing-context">Find the missing context</a></li>
+      <li><a href="#instructions">Run <code>agentrc instructions</code></a></li>
+      <li><a href="#review">Review what AgentRC generated</a></li>
+      <li><a href="#commit">Decide what to keep</a></li>
+      <li><a href="#done">Definition of done</a></li>
+      <li><a href="#why">What you've just practised</a></li>
+    </ol>
+  </div>
+</section>
+
+<section id="what">
+  <h2><span class="num">1</span> What this is & how to use it</h2>
+  <p><a href="./LAB.html">Lab 1</a> teaches spec-first development with Spec Kit. This lab is the companion exercise: before asking an agent to implement a feature, make the repository easier for agents to understand.</p>
+  <p>The goal is not to chase a perfect score. The goal is to learn how to read an AI-readiness report, identify which missing context actually matters for this repo, and generate useful agent instructions without accepting generic boilerplate.</p>
+
+  <div class="callout info">
+    <div class="label">Lab posture</div>
+    <p style="margin:0">Treat every AgentRC output as a draft. AgentRC reads the repository and proposes context, but you are still responsible for checking whether it matches the real Java/Maven/JUnit stack and the workshop constraints.</p>
+  </div>
+</section>
+
+<section id="setup">
+  <h2><span class="num">2</span> Setup - verify tools and repo state</h2>
+  <p>Run from the repository root. You need Node.js with <code>npx</code>, Git, and the usual Java/Maven setup from Lab 1.</p>
+<pre><code>git status --short
+node --version
+npx --version
+mvn test</code></pre>
+  <p>Start from a clean or intentionally understood worktree. If you already have generated instruction files or custom agents under <code>.github/</code>, note that before running AgentRC so you can tell what changed.</p>
+
+  <details class="hint tip">
+    <summary>Tip - capture the baseline first</summary>
+    <div class="body">
+      <p>Run <code>git status --short</code> before and after each AgentRC command. The diff is the easiest way to separate "AgentRC generated this" from "this was already in my repo".</p>
+    </div>
+  </details>
+  <details class="hint guardrail">
+    <summary>Guardrail - don't skip the build</summary>
+    <div class="body">
+      <p>AI-readiness is not only documentation. A coding agent also needs reliable commands that prove it did not break the project. For this repo, <code>mvn test</code> is the core validation signal.</p>
+    </div>
+  </details>
+</section>
+
+<section id="readiness">
+  <h2><span class="num">3</span> Run <code>agentrc readiness</code> <span class="pill specify">Assess</span></h2>
+  <p>Ask AgentRC to score the repository's current support for AI-assisted development:</p>
+<pre><code>npx github:microsoft/agentrc readiness</code></pre>
+  <p>Read the report before changing anything. You are looking for the difference between "the app works for a human" and "the repo gives a coding agent enough context to work safely".</p>
+
+  <details class="hint tip">
+    <summary>Tip - read across pillars, not just the headline score</summary>
+    <div class="body">
+      <p>A low score in one pillar can be more important than a high overall average. For example, missing test commands or missing repo instructions will hurt agent reliability more than a missing changelog in this small workshop repo.</p>
+    </div>
+  </details>
+  <details class="hint peek">
+    <summary>Peek - what AgentRC is likely to notice here</summary>
+    <div class="body">
+      <p>This repo has a clear README, a Maven build, JUnit tests, and a GitHub Pages workflow. It may still lack formal linting, a dev container, MCP server configuration, issue/PR templates, dedicated evals, and complete agent-facing instructions.</p>
+    </div>
+  </details>
+</section>
+
+<section id="score">
+  <h2><span class="num">4</span> Interpret the 9 pillars and 5 levels</h2>
+  <p>AgentRC frames readiness as a maturity model. Use it to decide where better context will most reduce agent mistakes.</p>
+  <table>
+    <thead><tr><th>Dimension</th><th>What to look for in this repo</th></tr></thead>
+    <tbody>
+      <tr><td>Documentation</td><td>Does the README explain purpose, commands, and module shape well enough for an agent?</td></tr>
+      <tr><td>Build system</td><td>Are Maven commands obvious, reliable, and documented?</td></tr>
+      <tr><td>Testing</td><td>Are JUnit tests present, named clearly, and easy to run?</td></tr>
+      <tr><td>Code style</td><td>Are formatting and layering conventions explicit, or only implied by examples?</td></tr>
+      <tr><td>Security</td><td>Are secret-handling and dependency expectations clear, even for a tiny starter?</td></tr>
+      <tr><td>Environment</td><td>Can a fresh machine understand required tools without tribal knowledge?</td></tr>
+      <tr><td>Task discovery</td><td>Are issues, PRs, or workshop instructions structured enough to guide work?</td></tr>
+      <tr><td>Agent context</td><td>Are Copilot instructions, MCP configs, and generated guidance present and accurate?</td></tr>
+      <tr><td>Evaluation</td><td>Is there any way to evaluate whether generated agent guidance is good?</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <div class="label">Important</div>
+    <p style="margin:0">The exact pillar names may vary as AgentRC evolves. Keep the lab focused on the habit: translate each score into a concrete missing piece of context that would help an agent operate safely in this repo.</p>
+  </div>
+</section>
+
+<section id="missing-context">
+  <h2><span class="num">5</span> Find the missing context <span class="pill clarify">Diagnose</span></h2>
+  <p>Turn the readiness report into a short action list. For each finding, ask: "Would this help a coding agent make better changes here?"</p>
+  <ol class="step-list">
+    <li>Mark findings that block safe code changes, such as missing test commands or missing module conventions.</li>
+    <li>Mark findings that improve onboarding, such as dev environment notes or README gaps.</li>
+    <li>Mark findings that are nice-to-have for this workshop, such as full production observability.</li>
+    <li>Ignore or defer suggestions that would distort the repo, such as adding a framework just to satisfy a checklist.</li>
+  </ol>
+
+  <details class="hint guardrail">
+    <summary>Guardrail - readiness is context, not ceremony</summary>
+    <div class="body">
+      <p>This is a tiny plain-Java starter. Do not add heavyweight tooling just to raise a maturity score. The best improvement is the smallest piece of context that makes future agent work more correct.</p>
+    </div>
+  </details>
+  <details class="hint peek">
+    <summary>Peek - examples of useful improvements</summary>
+    <div class="body">
+      <ul>
+        <li>Document that new modules mirror <code>com.example.erp.customer</code>.</li>
+        <li>State that <code>mvn test</code> must stay green after every change.</li>
+        <li>Explain that services use <code>beforeSave</code> and <code>beforeDeactivate</code> hooks.</li>
+        <li>Record that the app intentionally has no database, no framework, and in-memory repositories.</li>
+        <li>Generate evals that check whether an agent preserves those constraints.</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="instructions">
+  <h2><span class="num">6</span> Run <code>agentrc instructions</code> <span class="pill plan">Generate</span></h2>
+  <p>Now ask AgentRC to generate tailored agent context from the actual repository:</p>
+<pre><code>npx github:microsoft/agentrc instructions</code></pre>
+  <p>The key promise: no static templates. AgentRC inspects this Java/Maven/JUnit codebase and produces instruction files, evals, and developer configs that should reflect what is really here.</p>
+
+  <details class="hint tip">
+    <summary>Tip - watch the file list</summary>
+    <div class="body">
+      <p>After the command finishes, run <code>git status --short</code>. New or modified files are the workshop material for the next step. Do not commit them until you have read them.</p>
+    </div>
+  </details>
+  <details class="hint guardrail">
+    <summary>Guardrail - generated does not mean approved</summary>
+    <div class="body">
+      <p>AgentRC should infer the stack, but you still review for hallucinated tools, wrong commands, or guidance that conflicts with the existing project. Reject instructions that suggest Spring, a database, Lombok, or unrelated build tools for this starter.</p>
+    </div>
+  </details>
+</section>
+
+<section id="review">
+  <h2><span class="num">7</span> Review what AgentRC generated <span class="pill tasks">Review</span></h2>
+  <p>Open each generated file and check it against the codebase. This is where the lab turns from "run a command" into engineering judgement.</p>
+  <table>
+    <thead><tr><th>Check</th><th>Question</th></tr></thead>
+    <tbody>
+      <tr><td>Stack accuracy</td><td>Does it identify plain Java, Maven, JUnit 5, and no framework?</td></tr>
+      <tr><td>Commands</td><td>Does it name the real validation commands: <code>mvn test</code>, <code>mvn package</code>, and the jar command?</td></tr>
+      <tr><td>Architecture</td><td>Does it describe model/repository/service/rules/CLI layering accurately?</td></tr>
+      <tr><td>Constraints</td><td>Does it preserve no database, in-memory repos, and no new runtime dependencies without approval?</td></tr>
+      <tr><td>Evals</td><td>Do generated evals measure useful behaviour for this repo rather than generic style?</td></tr>
+      <tr><td>MCP/dev config</td><td>Are any MCP server or dev environment configs relevant, safe, and documented?</td></tr>
+    </tbody>
+  </table>
+
+  <details class="hint peek">
+    <summary>Peek - a good generated instruction for this repo</summary>
+    <div class="body">
+      <p>A strong instruction says something like: "When adding a module, mirror <code>customer</code>; add JUnit tests for rule failures; keep repositories in memory; run <code>mvn test</code>; do not add Spring or persistence." That is repo-specific context an agent can act on.</p>
+    </div>
+  </details>
+</section>
+
+<section id="commit">
+  <h2><span class="num">8</span> Decide what to keep <span class="pill impl">Curate</span></h2>
+  <p>Make a deliberate keep/edit/drop decision for every generated artifact. The output is not valuable because a tool created it; it is valuable only if it makes the next AI-assisted change safer.</p>
+<pre><code>git diff
+mvn test
+git status --short</code></pre>
+  <p>If the generated context is accurate, commit it separately from feature work. If it needs correction, edit it until it reflects the actual repo.</p>
+
+  <div class="callout info">
+    <div class="label">Suggested commit shape</div>
+    <p style="margin:0">Keep AgentRC-generated repo context in its own commit. That makes it easy for reviewers to inspect the new instructions before any later AI-assisted implementation depends on them.</p>
+  </div>
+</section>
+
+<section id="done">
+  <h2><span class="num">9</span> Definition of done</h2>
+  <ul>
+    <li>You ran <code>npx github:microsoft/agentrc readiness</code> from the repo root.</li>
+    <li>You can explain the repo's strongest and weakest readiness pillars.</li>
+    <li>You identified which missing context matters for this Java/Maven starter and which suggestions are out of scope.</li>
+    <li>You ran <code>npx github:microsoft/agentrc instructions</code>.</li>
+    <li>You reviewed generated instructions, evals, and dev configs before accepting them.</li>
+    <li><code>mvn test</code> still passes after any kept changes.</li>
+    <li>The final diff contains only context you understand and are willing to maintain.</li>
+  </ul>
+</section>
+
+<section id="why">
+  <h2><span class="num">10</span> What you've just practised</h2>
+  <p>This lab gives you a repeatable AI-readiness loop for any brownfield repository:</p>
+  <table>
+    <thead><tr><th>Step</th><th>Skill</th><th>Question it answers</th></tr></thead>
+    <tbody>
+      <tr><td><code>readiness</code></td><td>Assessment</td><td>What context does this repo already give an agent?</td></tr>
+      <tr><td>Score review</td><td>Prioritisation</td><td>Which missing context will reduce real mistakes?</td></tr>
+      <tr><td><code>instructions</code></td><td>Generation</td><td>What repo-specific guidance can be created from the code itself?</td></tr>
+      <tr><td>Human review</td><td>Curation</td><td>Is the generated context true, useful, and safe to keep?</td></tr>
+      <tr><td>Commit</td><td>Operationalisation</td><td>Can future agents and teammates rely on this context?</td></tr>
+    </tbody>
+  </table>
+  <p>The loop is the point. Readiness is not a badge; it is the practice of giving agents the same context a careful teammate would need before touching the code.</p>
+</section>
+
+</main>
+
+<footer>
+  AgentRC AI-readiness lab · Java / Maven / JUnit 5 · <a href="./LAB.html">Back to Lab 1</a>
+</footer>
+
+</body>
+</html>

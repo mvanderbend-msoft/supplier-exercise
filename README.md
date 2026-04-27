@@ -9,7 +9,10 @@ consistent pattern. The workshop exercise is to **add a Supplier module** using
 the same pattern, but driven through the Spec Kit workflow rather than jumping
 straight into code.
 
-See [`LAB.html`](./LAB.html) for the workshop script (open it in a browser).
+Workshop scripts:
+
+- [`LAB.html`](./LAB.html) — Spec Kit lab for adding a Supplier module
+- [`LAB2.html`](./LAB2.html) — AgentRC lab for scoring and improving AI-readiness
 
 ---
 
